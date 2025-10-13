@@ -1,17 +1,22 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
+
+mongoose.set('strictQuery', true);
 
 const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    throw new Error('MONGO_URI is not defined');
+  }
 
-        console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-        console.error(`❌ Error: ${error.message}`);
-        process.exit(1); // Thoát khỏi tiến trình với lỗi
-    }
+  try {
+    await mongoose.connect(uri);
+    // eslint-disable-next-line no-console
+    console.log(`MongoDB connected: ${mongoose.connection.host}`);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('MongoDB connection error', error);
+    throw error;
+  }
 };
 
 module.exports = connectDB;

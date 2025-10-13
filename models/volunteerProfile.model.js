@@ -1,63 +1,93 @@
-﻿// models/volunteerProfile.model.js
 const mongoose = require('mongoose');
+const mediaAssetSchema = require('./schemas/mediaAsset.schema');
+const geoPointSchema = require('./schemas/geoPoint.schema');
 
-// Dựa theo tài liệu thiết kế của bạn
-const VolunteerProfileSchema = new mongoose.Schema(
-    {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User', // Đây là cách Mongoose biết trường này liên kết tới Model 'User'
-            required: true,
-            unique: true,
-        },
-        type: {
-            type: String,
-            enum: ['CN', 'TC'],
-            required: true,
-        },
-        status: {
-            type: String,
-            enum: ['PENDING', 'APPROVED', 'REJECTED'],
-            default: 'PENDING',
-        },
-        ready: {
-            type: Boolean,
-            default: false,
-        },
-        skills: {
-            type: [String], // Ví dụ: ['SWIM', 'FIRST_AID']
-        },
-        homeBase: {
-            location: {
-                type: {
-                    type: String,
-                    enum: ['Point'],
-                    default: 'Point',
-                },
-                coordinates: {
-                    type: [Number], // [longitude, latitude]
-                },
-            },
-            radiusKm: {
-                type: Number,
-                default: 5,
-            },
-        },
-        reputation: {
-            totalCases: { type: Number, default: 0 },
-            ratingAvg: { type: Number, default: 0 },
-            badges: [String],
-        },
-        // Các trường khác như idCardFront, organization... bạn có thể thêm tương tự
+const volunteerProfileSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      unique: true,
+      index: true,
     },
-    {
-        timestamps: true,
-    }
+    type: {
+      type: String,
+      enum: ['CN', 'TC'],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['PENDING', 'APPROVED', 'REJECTED'],
+      default: 'PENDING',
+      index: true,
+    },
+    ready: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    idCardFront: {
+      type: mediaAssetSchema,
+      default: null,
+    },
+    idCardBack: {
+      type: mediaAssetSchema,
+      default: null,
+    },
+    organization: {
+      type: new mongoose.Schema(
+        {
+          name: { type: String, trim: true },
+          address: { type: String, trim: true },
+          contactPhone: { type: String, trim: true },
+          legalDoc: { type: mediaAssetSchema, default: null },
+        },
+        { _id: false }
+      ),
+      default: null,
+    },
+    homeBase: {
+      type: new mongoose.Schema(
+        {
+          location: { type: geoPointSchema, required: true },
+          radiusKm: { type: Number, default: 5, min: 0 },
+        },
+        { _id: false }
+      ),
+      required: true,
+    },
+    reputation: {
+      type: new mongoose.Schema(
+        {
+          totalCases: { type: Number, default: 0, min: 0 },
+          ratingAvg: { type: Number, default: 0, min: 0, max: 5 },
+          badges: { type: [String], default: [] },
+        },
+        { _id: false }
+      ),
+      default: () => ({}),
+    },
+    reviewNotes: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    approvedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
-// Tạo index cho truy vấn vị trí
-VolunteerProfileSchema.index({ 'homeBase.location': '2dsphere' });
+volunteerProfileSchema.index({ 'homeBase.location': '2dsphere' });
 
-const VolunteerProfile = mongoose.model('VolunteerProfile', VolunteerProfileSchema);
-
-module.exports = VolunteerProfile;
+module.exports = mongoose.model('VolunteerProfile', volunteerProfileSchema);

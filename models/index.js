@@ -1,0 +1,15 @@
+module.exports = {
+  User: require('./user.model'),
+  VolunteerProfile: require('./volunteerProfile.model'),
+  Skill: require('./skill.model'),
+  SosCase: require('./sosCase.model'),
+  SosChannel: require('./sosChannel.model'),
+  SosMessage: require('./sosMessage.model'),
+  SosResponderQueue: require('./sosResponderQueue.model'),
+  Device: require('./device.model'),
+  Notification: require('./notification.model'),
+  Post: require('./post.model'),
+  Comment: require('./comment.model'),
+  ModerationLog: require('./moderationLog.model'),
+  MediaAsset: require('./mediaAsset.model'),
+};
