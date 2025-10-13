@@ -1,0 +1,84 @@
+# SOS App API
+
+## Tổng quan
+- Dịch vụ API cho hệ thống hỗ trợ khẩn cấp (Safe Connect) xây dựng bằng Node.js và Express.
+- Sử dụng MongoDB với Mongoose để quản lý dữ liệu người dùng, tình huống SOS, bài viết và thông báo.
+- Hỗ trợ xác thực JWT, quản lý phiên qua cookie, cấu hình CORS linh hoạt và các biện pháp bảo vệ dữ liệu cơ bản.
+
+## Tính năng chính
+- Đăng ký và đăng nhập người dùng bằng số điện thoại hoặc email, mã hóa mật khẩu với bcrypt.
+- Lấy thông tin hồ sơ người dùng đang đăng nhập bằng token JWT.
+- Đồng bộ index MongoDB và áp dụng schema validation tự động mỗi khi khởi động.
+- Kiến trúc module hóa với các thư mục `controllers`, `routes`, `middleware`, `models` và `utils`.
+
+## Yêu cầu hệ thống
+- Node.js >= 18
+- MongoDB instance và quyền kết nối (Atlas hoặc self-hosted)
+
+## Cài đặt
+1. Cài đặt dependencies:  
+   ```bash
+   npm install
+   ```
+2. Tạo file `.env` ở thư mục gốc và điền các biến cấu hình cần thiết (xem mục bên dưới).
+3. Khởi động cơ sở dữ liệu MongoDB và đảm bảo ứng dụng có thể kết nối tới `MONGO_URI` đã cấu hình.
+
+## Chạy dự án
+- Chạy môi trường phát triển/production nhẹ:
+  ```bash
+  npm run dev
+  ```
+  (lệnh `npm start` dùng chung cấu hình)
+
+Khi khởi động thành công, server log: `Server listening at http://localhost:5000` (hoặc host/port bạn cấu hình). Endpoint kiểm tra nhanh: `GET /health`.
+
+## Biến môi trường
+| Biến | Bắt buộc | Giá trị mẫu | Mô tả |
+| ---- | -------- | ----------- | ----- |
+| `PORT` | Không | `5000` | Cổng HTTP server. Mặc định 5000. |
+| `HOST` | Không | `0.0.0.0` | Địa chỉ bind server. `0.0.0.0` cho phép truy cập từ mọi IP. |
+| `MONGO_URI` | Có | `mongodb://localhost:27017/sos_app` | Chuỗi kết nối MongoDB. |
+| `JWT_SECRET` | Có | `super-secret-key` | Secret ký/verify JWT. |
+| `JWT_EXPIRES_IN` | Không | `7d` | Thời gian hết hạn token (chuẩn JWT). |
+| `CORS_ORIGINS` | Không | `https://app.example.com,http://localhost:3000` | Danh sách origin được phép, phân tách bằng dấu phẩy. |
+
+Trong môi trường production, đảm bảo không commit file `.env` và lưu secret an toàn (ví dụ thông qua trình quản lý secret).
+
+## Cấu trúc thư mục
+```text
+.
+├─ config/                # Cấu hình kết nối DB và khởi tạo schema/validator
+├─ controllers/           # Xử lý logic API (vd: auth.controller)
+├─ docs/                  # Tài liệu bổ sung
+├─ middleware/            # Middleware tùy chỉnh (auth, error handler, ...)
+├─ models/                # Định nghĩa Mongoose models và schemas
+├─ routes/                # Khai báo router Express
+├─ utils/                 # Helper chung (JWT, AppError, ...)
+├─ server.js              # Điểm khởi động chính của ứng dụng
+└─ package.json           # Scripts và dependencies
+```
+
+## API chính
+- `POST /api/auth/register`  
+  Body JSON: `fullName`, `phone`, tùy chọn `email`, `password`. Trả về `token` và thông tin `user`.
+- `POST /api/auth/login`  
+  Body JSON: `phone` hoặc `email`, kèm `password`. Trả về `token` và thông tin `user`.
+- `GET /api/auth/me`  
+  Yêu cầu header `Authorization: Bearer <JWT>`. Trả về hồ sơ người dùng hiện tại.
+- `GET /` và `GET /health`  
+  Endpoint kiểm tra trạng thái dịch vụ.
+
+Ví dụ đăng nhập bằng `curl`:
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"+84123456789","password":"your-password"}'
+```
+
+## Kiểm thử & lint
+- Hiện chưa cấu hình bài test tự động (`npm test` trả về placeholder). Khuyến nghị bổ sung khi phát triển thêm.
+- Dự án chưa tích hợp ESLint/Prettier; cấu hình phù hợp nên được thêm tùy nhu cầu nhóm.
+
+## Ghi chú phát triển
+- Khi server khởi chạy, hàm `initializeDatabase` sẽ đồng bộ index và áp dụng validator JSON Schema cho các collection chính (`users`, `sos_cases`, `posts`). Hãy đảm bảo tài khoản kết nối MongoDB có quyền `collMod`.
+- Để mở rộng API, thêm router mới vào `routes/index.js` và viết controller tương ứng trong `controllers`.
