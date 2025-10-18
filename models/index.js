@@ -8,7 +8,7 @@ module.exports = {
   SosResponderQueue: require('./sosResponderQueue.model'),
   Device: require('./device.model'),
   Notification: require('./notification.model'),
-  Post: require('./post.model'),
+  Article: require('./article.model'),
   Comment: require('./comment.model'),
   ModerationLog: require('./moderationLog.model'),
   MediaAsset: require('./mediaAsset.model'),

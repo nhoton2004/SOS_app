@@ -26,6 +26,7 @@ tmp/
 # Environment variables
 .env
 .env.*
+.env
 
 # IDE and editor configs
 .vscode/
