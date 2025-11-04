@@ -5,7 +5,7 @@ const { deleteFileFromS3, getFileUrl } = require('../config/s3');
 // Tạo bài viết mới
 const createArticle = async (req, res, next) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, category, status } = req.body;
     const authorId = req.user._id;
 
     // Xử lý hình ảnh nếu có
@@ -22,13 +22,23 @@ const createArticle = async (req, res, next) => {
       };
     }
 
+    // Xác định category và status
+    const articleCategory = category || 'BLOG';
+    const articleStatus = status || (articleCategory === 'COMMUNITY' ? 'PENDING' : 'APPROVED');
+    
+    // Nếu là BLOG và có quyền admin, có thể set status khác
+    const allowedStatuses = ['DRAFT', 'PENDING', 'APPROVED'];
+    const finalStatus = req.user.roles.includes('ADMIN') ? (status || articleStatus) : articleStatus;
+
     const article = await Article.create({
       title,
       content,
       images: imageData,
       author: authorId,
       authorName: req.user.fullName,
-      publishedAt: new Date(), // Tự động publish khi tạo
+      category: articleCategory,
+      status: finalStatus,
+      publishedAt: finalStatus === 'APPROVED' ? new Date() : null,
     });
 
     res.status(201).json({
@@ -51,11 +61,23 @@ const getArticles = async (req, res, next) => {
       page = 1,
       limit = 10,
       search,
+      category,
+      status,
       sortBy = 'publishedAt',
       sortOrder = 'desc',
     } = req.query;
 
     const query = {};
+    
+    // Filter theo category
+    if (category) {
+      query.category = category;
+    }
+    
+    // Filter theo status
+    if (status) {
+      query.status = status;
+    }
     
     // Tìm kiếm theo title và content
     if (search) {
@@ -274,6 +296,78 @@ const uploadImage = async (req, res, next) => {
   }
 };
 
+// Duyệt bài viết (chỉ admin)
+const approveArticle = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const article = await Article.findById(id);
+    if (!article) {
+      throw new AppError('Article not found', 404);
+    }
+
+    if (article.status === 'APPROVED') {
+      throw new AppError('Article is already approved', 400);
+    }
+
+    article.status = 'APPROVED';
+    article.rejectedReason = null;
+    if (!article.publishedAt) {
+      article.publishedAt = new Date();
+    }
+    await article.save();
+
+    const articleObj = await Article.findById(id)
+      .populate('author', 'fullName avatar')
+      .lean();
+
+    res.json({
+      success: true,
+      data: articleObj,
+      message: 'Article approved successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Từ chối bài viết (chỉ admin)
+const rejectArticle = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { rejectedReason } = req.body;
+
+    if (!rejectedReason) {
+      throw new AppError('Rejected reason is required', 400);
+    }
+
+    const article = await Article.findById(id);
+    if (!article) {
+      throw new AppError('Article not found', 404);
+    }
+
+    if (article.status === 'REJECTED') {
+      throw new AppError('Article is already rejected', 400);
+    }
+
+    article.status = 'REJECTED';
+    article.rejectedReason = rejectedReason;
+    await article.save();
+
+    const articleObj = await Article.findById(id)
+      .populate('author', 'fullName avatar')
+      .lean();
+
+    res.json({
+      success: true,
+      data: articleObj,
+      message: 'Article rejected successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createArticle,
   getArticles,
@@ -282,4 +376,6 @@ module.exports = {
   toggleLike,
   deleteArticle,
   uploadImage,
+  approveArticle,
+  rejectArticle,
 };

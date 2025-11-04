@@ -7,8 +7,10 @@ const {
   toggleLike,
   deleteArticle,
   uploadImage,
+  approveArticle,
+  rejectArticle,
 } = require('../controllers/article.controller');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 const { upload, handleUploadError } = require('../config/s3');
 
 const router = express.Router();
@@ -48,5 +50,9 @@ router.delete('/:id', deleteArticle);
 
 // Thích/bỏ thích bài viết - tất cả user đã đăng nhập
 router.post('/:id/like', toggleLike);
+
+// Duyệt/từ chối bài viết - chỉ admin
+router.post('/:id/approve', authorize('ADMIN'), approveArticle);
+router.post('/:id/reject', authorize('ADMIN'), rejectArticle);
 
 module.exports = router;

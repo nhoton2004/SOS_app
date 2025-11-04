@@ -14,9 +14,18 @@ const app = express();
 
 const parseCorsOrigins = () => {
   if (!process.env.CORS_ORIGINS) {
-    return ['*'];
+    // Default: allow localhost:3000 for frontend admin dashboard
+    return ['http://localhost:3000', 'http://localhost:5173'];
   }
-  return process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean);
+  const origins = process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean);
+  // Always include localhost:3000 for development
+  if (!origins.includes('http://localhost:3000')) {
+    origins.push('http://localhost:3000');
+  }
+  if (!origins.includes('http://localhost:5173')) {
+    origins.push('http://localhost:5173');
+  }
+  return origins;
 };
 
 app.use(

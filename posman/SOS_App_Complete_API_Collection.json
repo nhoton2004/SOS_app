@@ -1,0 +1,1054 @@
+{
+  "info": {
+    "name": "SOS App - Complete API Collection",
+    "description": "Collection Postman đầy đủ cho tất cả API của hệ thống SOS (Safe Connect): Authentication, Articles, SOS Cases",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reporterToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "volunteerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "caseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "articleId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Kiểm tra trạng thái cơ bản của API"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Kiểm tra trạng thái sức khỏe của server"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.token) {",
+                  "        pm.collectionVariables.set('token', responseJson.token);",
+                  "        console.log('Token saved to collection variable');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn A\",\n  \"phone\": \"+84123456789\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Đăng ký tài khoản người dùng mới"
+          },
+          "response": []
+        },
+        {
+          "name": "Login with Phone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.token) {",
+                  "        pm.collectionVariables.set('token', responseJson.token);",
+                  "        console.log('Token saved to collection variable');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+84123456789\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Đăng nhập bằng số điện thoại"
+          },
+          "response": []
+        },
+        {
+          "name": "Login with Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.token) {",
+                  "        pm.collectionVariables.set('token', responseJson.token);",
+                  "        console.log('Token saved to collection variable');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Đăng nhập bằng email"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Lấy thông tin hồ sơ người dùng hiện tại (yêu cầu xác thực)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SOS Case Management",
+      "item": [
+        {
+          "name": "Create SOS Case",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.data && responseJson.data.case && responseJson.data.case._id) {",
+                  "        pm.collectionVariables.set('caseId', responseJson.data.case._id);",
+                  "        console.log('Case ID saved to collection variable');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{reporterToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 10.762622,\n  \"longitude\": 106.660172,\n  \"emergencyType\": \"MEDICAL\",\n  \"description\": \"Cần hỗ trợ y tế khẩn cấp, người bị ngất\",\n  \"manualAddress\": \"123 Đường ABC, Quận 1, TP.HCM\",\n  \"batteryLevel\": 45,\n  \"isUrgent\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos"]
+            },
+            "description": "Tạo SOS case mới. Lưu ý: Cần đăng nhập với tài khoản USER để tạo case."
+          },
+          "response": []
+        },
+        {
+          "name": "Get SOS Case Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}"]
+            },
+            "description": "Lấy chi tiết SOS case với vị trí reporter và responder"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All SOS Cases",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sos?page=1&limit=10&status=SEARCHING&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "SEARCHING",
+                  "description": "SEARCHING, ACCEPTED, IN_PROGRESS, RESOLVED, CANCELLED"
+                },
+                {
+                  "key": "emergencyType",
+                  "value": "MEDICAL",
+                  "description": "MEDICAL, FIRE, ACCIDENT, CRIME, NATURAL_DISASTER, OTHER",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Lấy danh sách SOS cases với filter và pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Accept SOS Case",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.data && responseJson.data.directionsUrl) {",
+                  "        console.log('Directions URL:', responseJson.data.directionsUrl);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{volunteerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}", "accept"]
+            },
+            "description": "Tình nguyện viên chấp nhận SOS case. Lưu ý: Cần đăng nhập với tài khoản có role TNV_CN hoặc TNV_TC và có VolunteerProfile đã approved."
+          },
+          "response": []
+        },
+        {
+          "name": "Decline SOS Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{volunteerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"declineReason\": \"Đang bận case khác\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}/decline",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}", "decline"]
+            },
+            "description": "Tình nguyện viên từ chối case trong queue"
+          },
+          "response": []
+        },
+        {
+          "name": "Reporter Cancel Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{reporterToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancelReason\": \"Đã được hỗ trợ bởi người khác\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}", "cancel"]
+            },
+            "description": "Reporter hủy case của chính mình"
+          },
+          "response": []
+        },
+        {
+          "name": "Volunteer Cancel Case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{volunteerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancelReason\": \"Không thể đến được địa điểm\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}", "cancel"]
+            },
+            "description": "Volunteer hủy case đã chấp nhận (sẽ reset về SEARCHING và tìm TNV mới)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Directions URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sos/{{caseId}}/directions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sos", "{{caseId}}", "directions"]
+            },
+            "description": "Lấy Google Maps directions URL cho case đã có responder"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Article Management",
+      "item": [
+        {
+          "name": "Get All Articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articles?page=1&limit=10&sortBy=publishedAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "publishedAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Lấy danh sách tất cả bài viết với pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articles?search=test&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "test"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Tìm kiếm bài viết theo title và content"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Article by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.data && responseJson.data._id) {",
+                  "        pm.collectionVariables.set('articleId', responseJson.data._id);",
+                  "        console.log('Article ID saved to collection variable');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/articles/{{articleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles", "{{articleId}}"]
+            },
+            "description": "Lấy chi tiết bài viết theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Article (Admin/TNV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Tiêu đề bài viết mới",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "Nội dung bài viết chi tiết...",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles"]
+            },
+            "description": "Tạo bài viết mới với hình ảnh (chỉ ADMIN, TNV_CN, TNV_TC)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Article",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Tiêu đề bài viết đã chỉnh sửa",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "Nội dung bài viết đã được cập nhật...",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articles/{{articleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles", "{{articleId}}"]
+            },
+            "description": "Cập nhật bài viết với hình ảnh mới (chỉ tác giả hoặc admin)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Article",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/articles/{{articleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles", "{{articleId}}"]
+            },
+            "description": "Xóa bài viết (chỉ tác giả hoặc admin)"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/articles/upload-image",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles", "upload-image"]
+            },
+            "description": "Upload hình ảnh riêng lẻ lên S3"
+          },
+          "response": []
+        },
+        {
+          "name": "Like Article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/articles/{{articleId}}/like",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "articles", "{{articleId}}", "like"]
+            },
+            "description": "Thích/bỏ thích bài viết"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Cases",
+      "item": [
+        {
+          "name": "Auth Test Cases",
+          "item": [
+            {
+              "name": "Register - Missing Required Fields",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Nguyễn Văn A\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "register"]
+                },
+                "description": "Test case: Đăng ký thiếu thông tin bắt buộc (phone, password)"
+              },
+              "response": []
+            },
+            {
+              "name": "Login - Invalid Credentials",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+84123456789\",\n  \"password\": \"wrongpassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "login"]
+                },
+                "description": "Test case: Đăng nhập với thông tin sai"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Profile - No Token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "me"]
+                },
+                "description": "Test case: Lấy profile không có token xác thực"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Profile - Invalid Token",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer invalid-token-here"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "me"]
+                },
+                "description": "Test case: Lấy profile với token không hợp lệ"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "SOS Case Test Cases",
+          "item": [
+            {
+              "name": "Create SOS Case - Missing Required Fields",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": 10.762622\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/sos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "sos"]
+                },
+                "description": "Test case: Thiếu các trường bắt buộc"
+              },
+              "response": []
+            },
+            {
+              "name": "Create SOS Case - Invalid Coordinates",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": 200,\n  \"longitude\": 300,\n  \"emergencyType\": \"MEDICAL\",\n  \"description\": \"Test\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/sos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "sos"]
+                },
+                "description": "Test case: Tọa độ không hợp lệ"
+              },
+              "response": []
+            },
+            {
+              "name": "Accept Case - Not Authorized",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{reporterToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/sos/{{caseId}}/accept",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "sos", "{{caseId}}", "accept"]
+                },
+                "description": "Test case: Reporter không thể chấp nhận case của chính mình"
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel Case - No Reason",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/sos/{{caseId}}/cancel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "sos", "{{caseId}}", "cancel"]
+                },
+                "description": "Test case: Hủy case không có lý do"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Article Test Cases",
+          "item": [
+            {
+              "name": "Create Article - Missing Title",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "content",
+                      "value": "Nội dung bài viết không có tiêu đề",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles"]
+                },
+                "description": "Test case: Tạo bài viết thiếu tiêu đề"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Article - No Auth",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Bài viết không có auth",
+                      "type": "text"
+                    },
+                    {
+                      "key": "content",
+                      "value": "Nội dung bài viết",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles"]
+                },
+                "description": "Test case: Tạo bài viết không có token xác thực"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Article - User Role",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "title",
+                      "value": "Bài viết từ user thường",
+                      "type": "text"
+                    },
+                    {
+                      "key": "content",
+                      "value": "Nội dung bài viết",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles"]
+                },
+                "description": "Test case: Tạo bài viết với role USER (sẽ bị từ chối)"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Article - Invalid ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles/invalid-id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles", "invalid-id"]
+                },
+                "description": "Test case: Lấy bài viết với ID không hợp lệ"
+              },
+              "response": []
+            },
+            {
+              "name": "Like Article - No Auth",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles/{{articleId}}/like",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles", "{{articleId}}", "like"]
+                },
+                "description": "Test case: Thích bài viết không có token xác thực"
+              },
+              "response": []
+            },
+            {
+              "name": "Upload Image - No Auth",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": []
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/articles/upload-image",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "articles", "upload-image"]
+                },
+                "description": "Test case: Upload hình ảnh không có token xác thực"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

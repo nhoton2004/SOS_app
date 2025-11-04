@@ -32,6 +32,15 @@ const sosResponderQueueSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    declineReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    declinedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: false,

@@ -65,6 +65,29 @@ const articleSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    
+    // Phân loại bài viết
+    category: {
+      type: String,
+      enum: ['BLOG', 'COMMUNITY'],
+      default: 'BLOG',
+      index: true,
+    },
+    
+    // Trạng thái bài viết
+    status: {
+      type: String,
+      enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED'],
+      default: 'PENDING',
+      index: true,
+    },
+    
+    // Lý do từ chối (cho community posts)
+    rejectedReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
   },
   {
     timestamps: true, // Tự động tạo createdAt và updatedAt
@@ -77,6 +100,8 @@ const articleSchema = new mongoose.Schema(
 articleSchema.index({ createdAt: -1 });
 articleSchema.index({ publishedAt: -1 });
 articleSchema.index({ author: 1, createdAt: -1 });
+articleSchema.index({ category: 1, status: 1 });
+articleSchema.index({ status: 1, createdAt: -1 });
 
 // Virtual để kiểm tra user hiện tại có thích bài viết không
 articleSchema.virtual('isLikedByCurrentUser').get(function() {

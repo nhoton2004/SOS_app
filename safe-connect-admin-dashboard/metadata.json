@@ -1,0 +1,5 @@
+{
+  "name": "Safe Connect Admin Dashboard",
+  "description": "An admin panel for managing SOS incidents, volunteers, community content, users, and blog posts for the Safe Connect mobile application. This dashboard allows administrators to approve volunteers, monitor rescue operations, moderate user-generated content, manage users, and publish blog articles.",
+  "requestFramePermissions": []
+}
